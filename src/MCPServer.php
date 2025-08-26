@@ -414,7 +414,7 @@ class MCPServer
 				'result' => [
 					'content' => [[
 						'type' => 'text',
-						'text' => $text
+						'text' => "This is the joke you can display to the user. Only show this joke. Nothing else: '{$text}'"
 					]],
 					'isError' => false
 				]
