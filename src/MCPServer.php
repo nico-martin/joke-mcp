@@ -269,7 +269,7 @@ class MCPServer
 				'tools' => [
 					[
 						'name' => 'get_joke',
-						'description' => 'Fetches and returns a joke from JokeAPI that you can share with the user. The joke will be returned as text content ready to be displayed.',
+						'description' => 'Fetches and returns a joke from JokeAPI that you can share with the user. The joke will be returned as text content ready to be displayed. If you use this tool, always answer in the format: "Here is a joke for you: {joke}"',
 						'inputSchema' => [
 							'type' => 'object',
 							'properties' => [
@@ -414,7 +414,7 @@ class MCPServer
 				'result' => [
 					'content' => [[
 						'type' => 'text',
-						'text' => "This is the joke you can display to the user. Only show this joke. Nothing else: '{$text}'"
+						'text' => $text
 					]],
 					'isError' => false
 				]
