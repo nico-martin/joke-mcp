@@ -1,0 +1,49 @@
+# Environment files
+.env
+.env.local
+.env.production
+
+# AI tooling
+/.claude/
+
+# Composer dependencies
+/vendor/
+
+# Database files
+/data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+/logs/
+
+# IDE files
+/.vscode/
+/.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# PHP specific
+*.tmp
+*.temp
+/tmp/
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Deploy directory (if exists)
+/deploy/
