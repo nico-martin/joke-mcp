@@ -275,16 +275,8 @@ class MCPServer
 							'properties' => [
 								'category' => [
 									'type' => 'string',
-									'enum' => ['Any', 'Programming', 'Misc', 'Dark', 'Pun', 'Spooky', 'Christmas'],
+									'enum' => ['Any', 'Programming', 'Misc', 'Pun', 'Spooky', 'Christmas'],
 									'description' => 'Category of joke to retrieve'
-								],
-								'blacklistFlags' => [
-									'type' => 'array',
-									'items' => [
-										'type' => 'string',
-										'enum' => ['nsfw', 'religious', 'political', 'racist', 'sexist', 'explicit']
-									],
-									'description' => 'Flags to exclude from jokes'
 								],
 								'type' => [
 									'type' => 'string',
@@ -300,10 +292,6 @@ class MCPServer
 									'minimum' => 1,
 									'maximum' => 10,
 									'description' => 'Number of jokes to retrieve (1-10)'
-								],
-								'safe' => [
-									'type' => 'boolean',
-									'description' => 'Only return safe jokes (no offensive content)'
 								]
 							],
 							'required' => []
@@ -335,20 +323,15 @@ class MCPServer
 	private function getJoke($arguments, $id)
 	{
 		$category = $arguments['category'] ?? 'Any';
-		$blacklistFlags = $arguments['blacklistFlags'] ?? [];
 		$type = $arguments['type'] ?? null;
 		$contains = $arguments['contains'] ?? null;
 		$amount = $arguments['amount'] ?? 1;
-		$safe = $arguments['safe'] ?? false;
 
 		// Build API URL
 		$url = 'https://v2.jokeapi.dev/joke/' . urlencode($category);
 		$params = [];
 
 		// Add query parameters
-		if (!empty($blacklistFlags)) {
-			$params['blacklistFlags'] = implode(',', $blacklistFlags);
-		}
 		if ($type) {
 			$params['type'] = $type;
 		}
@@ -358,9 +341,9 @@ class MCPServer
 		if ($amount > 1) {
 			$params['amount'] = $amount;
 		}
-		if ($safe) {
-			$params['safe-mode'] = 'true';
-		}
+
+		// Always enable safe-mode
+		$params['safe-mode'] = 'true';
 
 		// Add format parameter
 		$params['format'] = 'json';
