@@ -1,0 +1,79 @@
+name: Deploy Joke MCP
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: pdo, sqlite3, curl, json, zip
+        tools: composer
+        
+    - name: Validate composer files
+      run: composer validate --strict
+        
+    - name: Get composer cache directory
+      id: composer-cache
+      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: ${{ runner.os }}-composer-
+        
+    - name: Install dependencies
+      run: |
+        composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+        
+    - name: Create deployment directory
+      run: |
+        mkdir -p deploy
+        
+    - name: Copy files for deployment
+      run: |
+        # Copy essential application files
+        cp -r src deploy/
+        cp -r vendor deploy/
+        cp .htaccess deploy/
+        cp index.php deploy/
+        cp composer.json deploy/
+        cp composer.lock deploy/
+        
+        # Create necessary directories
+        mkdir -p deploy/data
+        
+        # Set proper permissions (will be handled by FTP)
+        chmod 755 deploy/data
+        
+    - name: Deploy via FTP
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.FTP_HOST }}
+        username: ${{ secrets.FTP_USER }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: ${{ secrets.FTP_PATH }}
+        local-dir: ./deploy/
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          **/.env.example
+          **/tests/**
+          **/*.md
+          
+    - name: Verify deployment
+      run: |
+        echo "🚀 Deployment completed successfully!"
