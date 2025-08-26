@@ -269,7 +269,7 @@ class MCPServer
 				'tools' => [
 					[
 						'name' => 'get_joke',
-						'description' => 'Get a joke from the JokeAPI with various filtering options',
+						'description' => 'This tool retrieves a joke from the JokeAPI. When using the tool you get a joke you can read to the user.',
 						'inputSchema' => [
 							'type' => 'object',
 							'properties' => [
