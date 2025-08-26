@@ -121,7 +121,3 @@ The server follows MCP protocol standards and can be integrated with any MCP-com
 - Session management with secure session IDs
 - Proper JSON-RPC 2.0 response formatting
 - Error handling for network and API issues
-
-## License
-
-MIT License - see LICENSE file for details.
