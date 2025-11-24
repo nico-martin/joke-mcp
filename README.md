@@ -95,6 +95,79 @@ Search for jokes about cats:
 }
 ```
 
+## REST API Endpoint
+
+In addition to the MCP interface, the server also provides a simple REST API endpoint for fetching jokes via HTTP GET requests.
+
+### GET /joke
+
+Fetch jokes using query parameters:
+
+```bash
+# Get a random joke
+GET https://jokes.nico.dev/joke
+
+# Get a programming joke
+GET https://jokes.nico.dev/joke?category=Programming
+
+# Get a single-line joke
+GET https://jokes.nico.dev/joke?type=single
+
+# Get jokes containing "computer"
+GET https://jokes.nico.dev/joke?contains=computer
+
+# Get multiple jokes
+GET https://jokes.nico.dev/joke?amount=5
+
+# Combine parameters
+GET https://jokes.nico.dev/joke?category=Pun&type=twopart&amount=3
+```
+
+### Query Parameters
+
+All parameters are optional:
+
+- `category`: Joke category - `Any`, `Programming`, `Misc`, `Pun`, `Spooky`, `Christmas`
+- `type`: Joke format - `single` (one-liner) or `twopart` (setup/delivery)
+- `contains`: Search for jokes containing this text
+- `amount`: Number of jokes to retrieve (1-10)
+
+### Response Format
+
+**Single joke:**
+```json
+{
+  "joke": "Why do programmers prefer dark mode? Because light attracts bugs.",
+  "type": "single",
+  "category": "Programming"
+}
+```
+
+**Multiple jokes:**
+```json
+{
+  "jokes": [
+    {
+      "text": "Why do programmers prefer dark mode? Because light attracts bugs.",
+      "type": "single",
+      "category": "Programming"
+    },
+    {
+      "text": "How many programmers does it take to change a light bulb?\nNone, that's a hardware problem.",
+      "type": "twopart",
+      "category": "Programming"
+    }
+  ]
+}
+```
+
+**Error response:**
+```json
+{
+  "error": "Error message here"
+}
+```
+
 ## API Integration
 
 This server integrates with the [JokeAPI v2](https://sv443.net/jokeapi/v2/) which provides:

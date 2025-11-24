@@ -54,4 +54,27 @@ $restClient->delete('/mcp', function ($request) use ($mcpServer) {
 	return $mcpServer->deleteHandler($request);
 });
 
+/**
+ * Joke endpoint
+ */
+
+$restClient->get('/joke', function ($request) use ($mcpServer) {
+	// Get query parameters (category, type, contains, amount)
+	$params = [];
+	if (isset($request->get['category'])) {
+		$params['category'] = $request->get['category'];
+	}
+	if (isset($request->get['type'])) {
+		$params['type'] = $request->get['type'];
+	}
+	if (isset($request->get['contains'])) {
+		$params['contains'] = $request->get['contains'];
+	}
+	if (isset($request->get['amount'])) {
+		$params['amount'] = $request->get['amount'];
+	}
+
+	return $mcpServer->getJokeRest($params);
+});
+
 $restClient->start();

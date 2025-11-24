@@ -467,4 +467,88 @@ class MCPServer
 			]
 		];
 	}
+
+	public function getJokeRest($params)
+	{
+		$category = $params['category'] ?? 'Any';
+		$type = $params['type'] ?? null;
+		$contains = $params['contains'] ?? null;
+		$amount = isset($params['amount']) ? (int)$params['amount'] : 1;
+
+		// Build API URL
+		$url = 'https://v2.jokeapi.dev/joke/' . urlencode($category);
+		$queryParams = [];
+
+		// Add query parameters
+		if ($type) {
+			$queryParams['type'] = $type;
+		}
+		if ($contains) {
+			$queryParams['contains'] = $contains;
+		}
+		if ($amount > 1) {
+			$queryParams['amount'] = $amount;
+		}
+
+		// Always enable safe-mode
+		$queryParams['safe-mode'] = 'true';
+		$queryParams['format'] = 'json';
+
+		// Build query string
+		if (!empty($queryParams)) {
+			$url .= '?' . http_build_query($queryParams);
+		}
+
+		try {
+			$client = new Client([
+				'timeout' => 10,
+				'headers' => [
+					'User-Agent' => 'JokeMCP/1.0'
+				]
+			]);
+
+			$response = $client->get($url);
+			$body = $response->getBody()->getContents();
+
+			$data = json_decode($body, true);
+			if (!$data) {
+				http_response_code(500);
+				return ['error' => 'Failed to parse API response'];
+			}
+
+			// Handle API errors
+			if (isset($data['error']) && $data['error']) {
+				http_response_code(400);
+				return ['error' => $data['message'] ?? 'Unknown error'];
+			}
+
+			// Format the response
+			if (isset($data['jokes'])) {
+				// Multiple jokes
+				$jokes = [];
+				foreach ($data['jokes'] as $joke) {
+					$jokes[] = [
+						'text' => $this->formatJoke($joke),
+						'type' => $joke['type'],
+						'category' => $joke['category']
+					];
+				}
+				return ['jokes' => $jokes];
+			} else {
+				// Single joke
+				return [
+					'joke' => $this->formatJoke($data),
+					'type' => $data['type'],
+					'category' => $data['category']
+				];
+			}
+
+		} catch (RequestException $e) {
+			http_response_code(500);
+			return ['error' => 'HTTP Error: ' . $e->getMessage()];
+		} catch (Exception $e) {
+			http_response_code(500);
+			return ['error' => 'Error: ' . $e->getMessage()];
+		}
+	}
 }
